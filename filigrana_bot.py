@@ -21,14 +21,9 @@ def strip_accents(text):
 
 def remove_letter(text):
     text = strip_accents(text)
-#    text = re.sub('[ ]+', "", text)
-#    text = re.sub('[^0-9a-zA-Z_-]', '', text)
     return text
 
 def convert_this(dest, ext):
-    #convertapi.convert('pdf',
-    #        {'File': '{}'.format(dest)},
-    #        from_format=ext[1:]).save_files('/home/pi/test_bot/mtp')
     comando="unoconv "+dest
     os.system(comando)
 
@@ -61,37 +56,37 @@ def filigrana(input_file,output_file,chat_id):
     page=reader_input.pages[0]
     w,h = sizepage(page)
     try:
-        logo=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_logo_settings.txt","r")
+        logo=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_logo_settings.txt","r")
         setting=logo.read()
         logo.close()
     except IOError:
-        logo=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_logo_settings.txt","w")
+        logo=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_logo_settings.txt","w")
         logo.write("on")
         setting="on"
 
     try:
-        opacity=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_opacity_settings.txt","r")
+        opacity=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_opacity_settings.txt","r")
         value_opacity=opacity.read()
         opacity.close()
     except IOError:
-        opacity=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_opacity_settings.txt","w")
+        opacity=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_opacity_settings.txt","w")
         opacity.write("25")
         opacity.close()
         value_opacity=25
 
     if setting=="on":
         if int(w) > int(h):
-            watermark_input=PdfReader("/home/pino/ftp/filigrane/fil_"+str(value_opacity)+"_logo_or.pdf")
+            watermark_input=PdfReader("/home/{user}/{path}/filigrane/fil_"+str(value_opacity)+"_logo_or.pdf")
             watermark = fixpage(watermark_input.pages[0],int(w),int(h))
         else:
-            watermark_input=PdfReader("/home/pino/ftp/filigrane/fil_"+str(value_opacity)+"_logo_ver.pdf")
+            watermark_input=PdfReader("/home/{user}/{path}/filigrane/fil_"+str(value_opacity)+"_logo_ver.pdf")
             watermark = fixpage(watermark_input.pages[0],int(w),int(h))
     else:
         if int(w) > int(h):
-            watermark_input=PdfReader("/home/pino/ftp/filigrane/fil_"+str(value_opacity)+"_or.pdf")
+            watermark_input=PdfReader("/home/{user}/{path}/filigrane/fil_"+str(value_opacity)+"_or.pdf")
             watermark = fixpage(watermark_input.pages[0],int(w),int(h))
         else:
-            watermark_input=PdfReader("/home/pino/ftp/filigrane/fil_"+str(value_opacity)+"_ver.pdf")
+            watermark_input=PdfReader("/home/{user}/{path}/filigrane/fil_"+str(value_opacity)+"_ver.pdf")
             watermark = fixpage(watermark_input.pages[0],int(w),int(h))
 
     for current_page in range(len(reader_input.pages)):
@@ -103,7 +98,7 @@ def handle(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
     print "\n"
     pprint(msg)
-    with open("/home/pino/ftp/log.txt",'a') as log:
+    with open("/home/{user}/{path}/log.txt",'a') as log:
         log.write("\n")
         log.write(str(msg))
         log.write("\n")
@@ -117,10 +112,10 @@ def handle(msg):
             bot.sendMessage(chat_id, "Il bot si occupa di convertire i file a lui inviati mediante il tool di sistema unoconv e in seguito appone una filigrana ad ogni pagina mediante la libreria pdfrw e i moduli di essa PdfWriter/Reader/ e PageMerge \n\nI comandi che supporta sono:\n 1) /filigrana - abilita o disabilita la filigrana;\n 2) /logo - che abilita o disabilita l'utilizzo del logo come filigrana;\n  3) /opacity {value} - che imposta il livello di opacita', value deve essere compreso tra 5 e 30 ed essere multiplo di 5 ( EX: /opacity 20 );\n  4) /help - stampa questo messaggio di aiuto.\n\n I file che vengono inviati al bot sono eliminati una volta terminato il processo di conversione e filigrana.")
         elif text=="/logo":
             try:
-                logo=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_logo_settings.txt","r")
+                logo=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_logo_settings.txt","r")
                 setting=logo.read()
                 logo.close()
-                logo=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_logo_settings.txt","w")
+                logo=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_logo_settings.txt","w")
                 if setting=="on":
                     logo.write("off")
                     bot.sendMessage(chat_id,"Impostazione aggiornata ad OFF (filigrana i file con scritta)")
@@ -128,7 +123,7 @@ def handle(msg):
                     logo.write("on")
                     bot.sendMessage(chat_id,"Impostazione aggiornata ad ON (filigrana i file con logo)")
             except IOError:
-                logo=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_logo_settings.txt","w")
+                logo=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_logo_settings.txt","w")
                 logo.write("on") 
                 bot.sendMessage(chat_id,"Impostazione aggiornata ad ON (filigrana i file con logo)")
         elif text=="/opacity":
@@ -136,17 +131,17 @@ def handle(msg):
         elif text[:8]=="/opacity" and text[9:]:
             new_opacity=int(text[9:])
             if new_opacity>=5 and new_opacity<=30 and new_opacity%5==0:
-                opacity=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_opacity_settings.txt","w")
+                opacity=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_opacity_settings.txt","w")
                 opacity.write(str(new_opacity))
                 bot.sendMessage(chat_id,"Impostazione aggiornata a "+str(new_opacity))
             else:
                 bot.sendMessage(chat_id,"Valore di opacity: "+str(new_opacity)+" non valido, inserirne uno compreso tra 5 e 30 e multiplo di 5")
         elif text=="/filigrana":
             try:
-                fil=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","r")
+                fil=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","r")
                 setting=fil.read()
                 fil.close()
-                fil=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","w")
+                fil=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","w")
                 if setting=="on":
                     fil.write("off")
                     bot.sendMessage(chat_id,"Impostazione aggiornata ad OFF (non filigrana)")
@@ -154,7 +149,7 @@ def handle(msg):
                     fil.write("on")
                     bot.sendMessage(chat_id,"Impostazione aggiornata ad ON (filigrana)")
             except IOError:
-                fil=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","w")
+                fil=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","w")
                 fil.write("on")
                 bot.sendMessage(chat_id,"Impostazione aggiornata ad ON (filigrana)")
         else:
@@ -164,18 +159,18 @@ def handle(msg):
         file_id = msg['document']['file_id']
         file_name = msg['document']['file_name']
         file_name_2 = file_name.replace(" ","_")
-        dest="/home/pino/ftp/converter_bot/"+file_name_2
+        dest="/home/{user}/{path}/converter_bot/"+file_name_2
         dest=dest.encode("utf-8")
         dest=remove_letter(dest)
         bot.download_file(file_id, dest)
         name,ext=os.path.splitext(dest)
         convert_this(dest,ext)
         try:
-            fil=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","r")
+            fil=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","r")
             setting=fil.read()
             fil.close()
         except IOError:
-            fil=open("/home/pino/ftp/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","w")
+            fil=open("/home/{user}/{path}/converter_bot/"+str(chat_id)+"_filigrana_settings.txt","w")
             fil.write("on")
             setting="on"
         if setting=="on":
@@ -190,7 +185,7 @@ def handle(msg):
 
 
 
-TOKEN = '1282503366:AAF48z14JFuujbTMNzheTMPiwozVcuNfkqA'
+TOKEN = '{YOUR TELEGRAM BOT TOKEN}'
 
 bot = telepot.Bot(TOKEN)
 MessageLoop(bot, handle).run_as_thread()
