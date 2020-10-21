@@ -4,7 +4,7 @@ Bot per convertire e filigranare file di vario tipo
 # Funzionamento
 L'utente manda il file che desidera convertire e il bot una volta ricevuto estrae le impostazioni dell'utente per poter eseguire il processo di conversione e filigrana, la conversione avviene in ogni caso, la filigrana solo se il flag è messo su on, inoltre il bot filigrana con la primaria o la secondaria a seconda dello stato del flag "logo".
 La filigrana ha l'opacità standard se non specificata dal comando predisposto.
-::::::::::::::
+---
 Per usare due tipi di filigrana è necessario creare due filigrane dimensione A4 sia orizontali che verticali.
 Per il sistema di opacità è necessario creare per ogni livello di opacità un pdf contenente la filigrana desiderata con quel livello di opacità, in questo modo il bot potrà usare i file pdf per far scegliere all'utente il livello di opacità.
 
